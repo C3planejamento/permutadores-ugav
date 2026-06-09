@@ -786,29 +786,39 @@ function thDiarioHTML(showTitle){
 }
 function marcosTabelaHTML(){
   const MARCOS=[
-    {lbl:'Raqueteamento', match:et=>et==='RAQUETEAMENTO'},
-    {lbl:'Abertura (remoção do feixe)', match:et=>et==='ABERTURA'},
-    {lbl:'Limpeza do feixe', match:et=>et==='LIMPEZA'},
-    {lbl:'Inspeção (IRIS)', match:et=>et==='INSPEÇÃO ENDS'||et==='INSPEÇÃO VISUAL'},
-    {lbl:'Montagem do feixe', match:et=>et==='MONTAGEM P/ 1º TH'||et==='MONTAGEM'},
-    {lbl:'Desraqueteamento', match:et=>et==='DESRAQUETEAMENTO'}
+    {lbl:'Raqueteamento', et:e=>e==='RAQUETEAMENTO', sub:null},
+    {lbl:'Remoção do feixe', et:e=>e==='ABERTURA', sub:'FEIXE'},
+    {lbl:'Limpeza do feixe', et:e=>e==='LIMPEZA', sub:'FEIXE'},
+    {lbl:'Inspeção (IRIS)', et:e=>e.indexOf('INSPEÇÃO')===0, sub:'IRIS'},
+    {lbl:'Instalação do feixe', et:e=>e==='MONTAGEM P/ 1º TH'||e==='MONTAGEM', sub:'FEIXE'},
+    {lbl:'Desraqueteamento', et:e=>e==='DESRAQUETEAMENTO', sub:null}
   ];
   const rows=MARCOS.map(m=>{
-    let aplic=0,real=0;
-    DATA.order.forEach(t=>{const et=etapasDe(t).find(m.match);if(!et)return;aplic++;if(etPct(t,et)>=100)real++;});
-    const pct=aplic?Math.round(real/aplic*100):0;
-    return `<tr><td class="d">${m.lbl}</td><td class="pv">${aplic}</td><td class="rl">${real}</td><td class="ac">${pct}%</td></tr>`;
+    let prev=0,real=0;
+    DATA.order.forEach(t=>{
+      const ets=etapasDe(t).filter(m.et);
+      if(!ets.length)return;
+      if(m.sub){
+        const et=ets.find(e=>subsDe(t,e).indexOf(m.sub)>=0);
+        if(!et)return;
+        prev++; if(subDone(subRec(t,et,m.sub)))real++;
+      } else {
+        prev++; if(etPct(t,ets[0])>=100)real++;
+      }
+    });
+    const pct=prev?Math.round(real/prev*100):0;
+    return `<tr><td class="d">${m.lbl}</td><td class="pv">${prev}</td><td class="rl">${real}</td><td class="ac">${pct}%</td></tr>`;
   }).join('');
   return `<table class="thtab">
-    <thead><tr><th style="text-align:left">Atividade</th><th class="pv">Aplicável</th><th class="rl">Concluído</th><th>%</th></tr></thead>
+    <thead><tr><th style="text-align:left">Atividade</th><th class="pv">Previsto</th><th class="rl">Concluído</th><th>%</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
 function marcosResumoHTML(){
-  return `<div class="sechead" style="margin-top:22px"><h2>Resumo de marcos — Aplicável × Concluído</h2><div class="ln"></div></div>
+  return `<div class="sechead" style="margin-top:22px"><h2>Resumo de marcos — Previsto × Concluído</h2><div class="ln"></div></div>
     <div class="panelbox" style="background:#fff;overflow:auto">
       <div class="thwrap">${marcosTabelaHTML()}</div>
-      <div class="note" style="color:#5d6690">Aplicável = nº de permutadores onde o marco se aplica. Concluído = nº com o marco 100% concluído (média das sub-etapas).</div>
+      <div class="note" style="color:#5d6690">Previsto = nº de permutadores onde o marco se aplica conforme etapas/sub-etapas (ex.: air-cooler não remove/instala feixe; nem todo TAG tem IRIS). Concluído = nº com o marco 100% concluído.</div>
     </div>`;
 }
 function resumoInner(clickable){
