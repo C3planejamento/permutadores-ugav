@@ -829,10 +829,10 @@ function resumoInner(clickable){
       <div class="chart">${resumoChartHTML()}</div>
       <div class="note">Previsto = média de etapas cuja <b>data prevista</b> já venceu (o que deveria estar concluído até hoje). Realizado = média do avanço físico lançado.</div>
     </div>
-    ${marcosResumoHTML()}
     <div class="sechead" style="margin-top:22px"><h2>Matriz de avanço — por tipo de permutador</h2><div class="ln"></div></div>
     ${matrizPorTipo(clickable)}
     <div class="note">Verde = concluído (100%) · Âmbar = em andamento · Cinza = não iniciado · Hachurado = não se aplica. Toque no TAG para abrir o equipamento.</div>
+    ${marcosResumoHTML()}
     <div class="sechead" style="margin-top:22px"><h2>Controle de TH — acompanhamento diário</h2><div class="ln"></div></div>
     <div class="panelbox" style="background:#fff;overflow:auto">${thDiarioHTML(false)}</div>`;
 }
