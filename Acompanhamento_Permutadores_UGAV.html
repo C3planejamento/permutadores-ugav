@@ -350,11 +350,11 @@ body[data-tema="preto"] .evb.ok,body[data-tema="azul"] .evb.ok{color:var(--ok)}
 .tvclock{margin-left:auto;text-align:right}.tvtime{font-family:var(--disp);font-weight:700;font-size:3vw;line-height:1;color:var(--orange)}
 .tvdate{font-size:1.1vw;color:#cfd6f4}
 .tvexit{margin-left:18px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:10px;padding:10px 14px;font-family:var(--disp);font-weight:600;font-size:14px}
-.tvbody{flex:1;padding:1.2vw 2.2vw;overflow:auto;display:flex;flex-direction:column;gap:1vw}
+.tvbody{flex:1;padding:1.2vw 2.2vw;overflow:auto;display:block}
 .tvcols{display:grid;grid-template-columns:1fr 1fr;gap:1.4vw;flex:1;min-height:0}
 .tvcol{background:#fff;color:#1a2150;border-radius:14px;padding:.9vw 1.3vw;overflow:hidden;display:flex;flex-direction:column}
 .tvcol .tvsec{color:#2b366f;font-size:1.4vw;margin-bottom:.5vw}
-#tv .thwrap{flex:1;min-height:0;max-height:none;border:none}
+#tv .thwrap{max-height:60vh}
 #tv table.thtab{font-size:clamp(13px,1.05vw,21px)}
 #tv table.thtab thead th{font-size:clamp(11px,.9vw,17px)}
 #tv .tvcol .note{font-size:clamp(10px,.78vw,15px);color:#5d6690}
@@ -384,7 +384,7 @@ body[data-tema="preto"] .evb.ok,body[data-tema="azul"] .evb.ok{color:var(--ok)}
 /* TH diário (previsto x realizado por dia) */
 .thwrap{overflow:auto;border:1px solid #d7ddec;border-radius:12px;max-height:42vh}
 table.thtab{border-collapse:separate;border-spacing:0;width:100%;font-size:clamp(11px,1.05vw,17px)}
-table.thtab th,table.thtab td{padding:.45vw .7vw;text-align:center;border-bottom:1px solid #e5e9f3;white-space:nowrap}
+table.thtab th,table.thtab td{padding:.45vw .7vw;text-align:center;border-bottom:1px solid #e5e9f3;white-space:nowrap;color:#2b366f}
 table.thtab thead th{position:sticky;top:0;background:#eef1f8;color:#2b366f;font-family:var(--disp);font-weight:700;font-size:clamp(10px,.95vw,15px);text-transform:uppercase;letter-spacing:.3px}
 table.thtab td.d{font-family:var(--disp);font-weight:700;color:#1a2150;text-align:left}
 table.thtab td.ac{font-weight:700;background:#f4f6fc}
