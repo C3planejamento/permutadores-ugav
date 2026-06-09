@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>C3 · Acompanhamento de Permutadores — UGAV</title>
+<title>C3 PERMUTADORES — UGAV</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -332,7 +332,7 @@ body[data-tema="preto"] .evb.ok,body[data-tema="azul"] .evb.ok{color:var(--ok)}
 .tvclock{margin-left:auto;text-align:right}.tvtime{font-family:var(--disp);font-weight:700;font-size:3vw;line-height:1;color:var(--orange)}
 .tvdate{font-size:1.1vw;color:#cfd6f4}
 .tvexit{margin-left:18px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;border-radius:10px;padding:10px 14px;font-family:var(--disp);font-weight:600;font-size:14px}
-.tvbody{flex:1;padding:1.4vw 2.2vw;overflow:hidden;display:flex;flex-direction:column;gap:1.2vw}
+.tvbody{flex:1;padding:1.4vw 2.2vw;overflow:auto;display:flex;flex-direction:column;gap:1.2vw}
 .tvkpis{display:grid;grid-template-columns:repeat(7,1fr);gap:1vw}
 .tvk{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:1.1vw 1vw;text-align:center}
 .tvk .tvv{font-family:var(--disp);font-weight:700;font-size:3vw;line-height:1;color:#fff}
@@ -443,7 +443,7 @@ table.thtab tfoot td{position:sticky;bottom:0;font-family:var(--disp);font-weigh
   <div class="lcard">
     <div class="logobox"><img id="loginlogo" alt="C3 Engenharia &amp; Soluções" style="height:46px;display:block"></div>
     <h2>C3 ENGENHARIA</h2>
-    <div class="sub">Acompanhamento de Permutadores · RPBC — UGAV</div>
+    <div class="sub">C3 PERMUTADORES · RPBC — UGAV</div>
     <div class="lfield"><label>Usuário</label><input id="lu" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" onkeydown="if(event.key==='Enter')entrar()"></div>
     <div class="lfield"><label>Senha</label><input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')entrar()"></div>
     <button class="lbtn" onclick="entrar()">Entrar</button>
@@ -458,7 +458,7 @@ table.thtab tfoot td{position:sticky;bottom:0;font-family:var(--disp);font-weigh
     <div class="htop">
       <div class="brand">
         <div class="logobrand"><img id="brandlogo" alt="C3 Engenharia &amp; Soluções"></div>
-        <div class="btitle"><h1>Acompanhamento de Permutadores</h1><div class="sub">Parada UGAV · RPBC — 105 PP</div></div>
+        <div class="btitle"><h1>C3 PERMUTADORES</h1><div class="sub">Parada UGAV · RPBC — 105 PP</div></div>
       </div>
       <div class="spacer"></div>
       <div class="htools">
@@ -526,7 +526,7 @@ table.thtab tfoot td{position:sticky;bottom:0;font-family:var(--disp);font-weigh
 <!-- MODO TV (somente visualização) -->
 <div id="tv">
   <div class="tvhead">
-    <div class="tvbrand"><img id="tvlogo" alt="C3"><div><div class="tvt">Acompanhamento de Permutadores</div><div class="tvs">Parada UGAV · RPBC — 105 PP</div></div></div>
+    <div class="tvbrand"><img id="tvlogo" alt="C3"><div><div class="tvt">C3 PERMUTADORES</div><div class="tvs">Parada UGAV · RPBC — 105 PP</div></div></div>
     <div class="tvclock"><div class="tvtime" id="tvTime">--:--</div><div class="tvdate" id="tvDate"></div></div>
     <button class="tvexit" onclick="tvClose()">✕ Sair</button>
   </div>
@@ -763,19 +763,48 @@ function thDiarioHTML(showTitle){
     </table></div>
     <div class="note" style="color:#5d6690">Total de THs: <b>${total}</b> · Realizados <b>${totR}</b> de <b>${totP}</b> programados (${pct}%). Colunas separadas por tipo de teste hidrostático (1º, 2º, 3º) por equipamento.</div>`;
 }
-function renderResumo(){
-  document.getElementById('resumoview').innerHTML=kpisHTML()+`
+function marcosResumoHTML(){
+  const MARCOS=[
+    {lbl:'Raqueteamento', et:'RAQUETEAMENTO'},
+    {lbl:'Abertura (remoção do feixe)', et:'ABERTURA'},
+    {lbl:'Limpeza do feixe', et:'LIMPEZA'},
+    {lbl:'Inspeção (IRIS)', et:'INSPEÇÃO'},
+    {lbl:'Montagem do feixe', et:'MONTAGEM E 1º TH'},
+    {lbl:'Desraqueteamento', et:'DESRAQUETEAMENTO'}
+  ];
+  const rows=MARCOS.map(m=>{
+    let prev=0,real=0;
+    DATA.order.forEach(t=>{const e=DATA.equip[t];if(!aplica(e,m.et))return;const r=etRec(t,m.et);
+      if(r.prev)prev++; if(r.real||(r.pct||0)>=100)real++;});
+    const pct=prev?Math.round(real/prev*100):0;
+    return `<tr><td class="d">${m.lbl}</td><td class="pv">${prev}</td><td class="rl">${real}</td><td class="ac">${pct}%</td></tr>`;
+  }).join('');
+  return `<div class="sechead" style="margin-top:22px"><h2>Resumo de marcos — Previsto × Realizado</h2><div class="ln"></div></div>
+    <div class="panelbox" style="background:#fff;overflow:auto">
+      <div class="thwrap"><table class="thtab">
+        <thead><tr><th style="text-align:left">Atividade</th><th class="pv">Previsto</th><th class="rl">Realizado</th><th>%</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <div class="note" style="color:#5d6690">Previsto = nº de permutadores com o marco programado (data prevista lançada). Realizado = nº já concluídos.</div>
+    </div>`;
+}
+function resumoInner(clickable){
+  return kpisHTML()+`
     <div class="sechead"><h2>Avanço por etapa — Previsto × Realizado</h2><div class="ln"></div></div>
     <div class="panelbox">
       <div class="leg"><span><i class="lp"></i>Previsto (conforme datas)</span><span><i class="lr"></i>Realizado (executado)</span></div>
       <div class="chart">${resumoChartHTML()}</div>
       <div class="note">Previsto = média de etapas cuja <b>data prevista</b> já venceu (o que deveria estar concluído até hoje). Realizado = média do avanço físico lançado.</div>
     </div>
+    ${marcosResumoHTML()}
     <div class="sechead" style="margin-top:22px"><h2>Matriz de avanço — por tipo de permutador</h2><div class="ln"></div></div>
-    ${matrizPorTipo(true)}
+    ${matrizPorTipo(clickable)}
     <div class="note">Verde = concluído (100%) · Âmbar = em andamento · Cinza = não iniciado · Hachurado = não se aplica. Toque no TAG para abrir o equipamento.</div>
     <div class="sechead" style="margin-top:22px"><h2>Controle de TH — acompanhamento diário</h2><div class="ln"></div></div>
     <div class="panelbox" style="background:#fff;overflow:auto">${thDiarioHTML(false)}</div>`;
+}
+function renderResumo(){
+  document.getElementById('resumoview').innerHTML=resumoInner(true);
 }
 
 /* ETIQUETAS / CÓDIGOS (QR, seleção por TAG) */
@@ -935,7 +964,7 @@ function rdoDocHTML(){
   const table=`<table class="doctable"><thead><tr><th style="width:34px">#</th><th>TAG</th><th>Descrição do equipamento</th><th>Etapa concluída (baixa)</th><th>Prevista</th><th>Realizada</th></tr></thead><tbody>${rows}</tbody></table>`;
   const sign=`<div class="docsign"><div>Planejamento / PCM</div><div>Coordenação de Execução</div><div>Fiscalização Petrobras</div></div>`;
   const foot=`<div class="docfoot"><span>C3 Engenharia &amp; Soluções — Relatório Diário de Obra (RDO)</span><span>Gerado em ${hojeBR()}</span></div>`;
-  return `<div class="docsheet">${docHead('RELATÓRIO DIÁRIO DE OBRA — RDO','Acompanhamento de Permutadores · Parada UGAV — RPBC')}${info}${table}${sign}${foot}</div>`;
+  return `<div class="docsheet">${docHead('RELATÓRIO DIÁRIO DE OBRA — RDO','C3 PERMUTADORES · Parada UGAV — RPBC')}${info}${table}${sign}${foot}</div>`;
 }
 function renderRDO(){
   if(!RDO_FROM){RDO_FROM=hoje();RDO_TO=hoje();}
@@ -1099,30 +1128,9 @@ function tvTick(){const n=new Date();const hh=String(n.getHours()).padStart(2,'0
   const dEl=document.getElementById('tvDate');if(dEl)dEl.textContent=hojeBR();}
 function tvRender(){
   const lg=document.getElementById('tvlogo');if(lg&&!lg.src)lg.src=LOGO;
-  let n=0,a=0,c=0,r=0,somaR=0,somaP=0;
-  DATA.order.forEach(t=>{const p=progresso(t);somaR+=p;somaP+=previsto(t);const g=statusGeral(t);if(g.k==='c')c++;else if(g.k==='a')a++;else if(g.k==='r')r++;else n++;});
-  const N=DATA.order.length,mr=Math.round(somaR/N),mp=Math.round(somaP/N);
-  const d=diffDias(META.prazo);const dtxt=d===null?'—':d<0?Math.abs(d)+' d ATRASO':d===0?'HOJE':d+' dias';const dcls=d===null?'':d<0?'over':d<=7?'warn':'ok';
-  const kpis=`<div class="tvkpis">
-    <div class="tvk"><div class="tvv">${N}</div><div class="tvl">Equipamentos</div></div>
-    <div class="tvk"><div class="tvv">${mr}%</div><div class="tvl">Avanço realizado</div></div>
-    <div class="tvk"><div class="tvv">${mp}%</div><div class="tvl">Avanço previsto</div></div>
-    <div class="tvk ok"><div class="tvv">${c}</div><div class="tvl">Concluídos</div></div>
-    <div class="tvk am"><div class="tvv">${a}</div><div class="tvl">Em andamento</div></div>
-    <div class="tvk rd"><div class="tvv">${r}</div><div class="tvl">Atrasados</div></div>
-    <div class="tvk ${dcls}"><div class="tvv" style="font-size:2.2vw">${dtxt}</div><div class="tvl">Prazo: ${fmtBR(META.prazo)}</div></div>
-  </div>`;
-  // modelo do Resumo Geral (chart + matriz por tipo), apenas leitura, rolável
-  const resumo=`<div class="tvresumo">
-    <div class="tvsec">Avanço por etapa — Previsto × Realizado</div>
-    <div class="leg"><span><i class="lp"></i>Previsto</span><span><i class="lr"></i>Realizado</span></div>
-    <div class="chart">${resumoChartHTML()}</div>
-    ${thDiarioHTML()}
-    <div class="tvsec" style="margin-top:18px">Matriz de avanço — por tipo de permutador</div>
-    ${matrizPorTipo(false)}
-  </div>`;
-  document.getElementById('tvBody').innerHTML=`${kpis}${resumo}`;
-  const pgEl=document.getElementById('tvPg');if(pgEl)pgEl.textContent='Role para ver toda a matriz';
+  // mesma tela do Resumo Geral (somente leitura)
+  document.getElementById('tvBody').innerHTML=resumoInner(false);
+  const pgEl=document.getElementById('tvPg');if(pgEl)pgEl.textContent='Role para ver tudo';
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){
   if(document.getElementById('qcrep').classList.contains('on')){qcCloseRep();return;}
